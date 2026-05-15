@@ -1,4 +1,4 @@
-# Mini OS — Operating System Team 11
+# Operating System Team 11 - Mini OS
 
 ## 빌드 환경 (로컬 테스트를 위함)
 
