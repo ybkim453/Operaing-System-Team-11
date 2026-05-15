@@ -13,6 +13,28 @@ static VNode* get_file(VNode* cur, const char* name) {
     return NULL;
 }
 
+static const char* nav_to_dir(VFS* vfs, const char* path) {
+    if (!strchr(path, '/')) return path;
+
+    static char dirpart[MAXD];
+    static char base[MAXN];
+
+    strncpy(dirpart, path, MAXD - 1);
+    dirpart[MAXD - 1] = '\0';
+
+    char* slash = strrchr(dirpart, '/');
+    strncpy(base, slash + 1, MAXN - 1);
+    base[MAXN - 1] = '\0';
+    *slash = '\0';
+
+    if (dirpart[0] == '\0')
+        vfs->current = vfs->root;
+    else if (MovePath(vfs, dirpart) != 0)
+        return NULL;
+
+    return base;
+}
+
 void command_cat(VFS* vfs, UserDB* users, int argc, char** argv) {
     if (argc < 2) {
         printf("Usage: cat [-n] <filename> or cat > <filename>\n");
@@ -42,11 +64,20 @@ void command_cat(VFS* vfs, UserDB* users, int argc, char** argv) {
         return;
     }
 
+    VNode* orig = vfs->current;
+
+    const char* base = nav_to_dir(vfs, filename);
+    if (!base) {
+        printf("cat: %s: No such file or directory\n", filename);
+        vfs->current = orig;
+        return;
+    }
+
     if (is_write) {
-        VNode* file = get_file(vfs->current, filename);
+        VNode* file = get_file(vfs->current, base);
         if (!file) {
             file = (VNode*)calloc(1, sizeof(VNode));
-            strncpy(file->name, filename, MAXN - 1);
+            strncpy(file->name, base, MAXN - 1);
             file->name[MAXN - 1] = '\0';
             file->type   = 'f';
             file->parent = vfs->current;
@@ -62,6 +93,7 @@ void command_cat(VFS* vfs, UserDB* users, int argc, char** argv) {
                 fprintf(stderr, "cat: no storage slot available\n");
                 vfs->current->child = file->sibling;
                 free(file);
+                vfs->current = orig;
                 return;
             }
             file->contentIndex = idx;
@@ -82,23 +114,27 @@ void command_cat(VFS* vfs, UserDB* users, int argc, char** argv) {
         file_content_store[file->contentIndex] = strdup(buf);
         file->SIZE = (int)nbytes;
         update_node_time(file);
+        vfs->current = orig;
         return;
     }
 
-    VNode* file = get_file(vfs->current, filename);
+    VNode* file = get_file(vfs->current, base);
     if (!file) {
         printf("cat: %s: No such file\n", filename);
+        vfs->current = orig;
         return;
     }
 
     if (IsPermission(file, 'r', users->current->UID) != 0) {
         printf("cat: %s: Permission denied\n", file->name);
+        vfs->current = orig;
         return;
     }
 
     if (file->contentIndex < 0 || file->contentIndex >= 256
             || !file_content_store[file->contentIndex]) {
         printf("\n");
+        vfs->current = orig;
         return;
     }
 
@@ -115,4 +151,6 @@ void command_cat(VFS* vfs, UserDB* users, int argc, char** argv) {
     } else {
         printf("%s", file_content_store[file->contentIndex]);
     }
+
+    vfs->current = orig;
 }
