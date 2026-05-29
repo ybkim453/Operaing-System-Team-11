@@ -40,6 +40,8 @@ void ParseAndExecute(VFS* vfs, Stack* stack, UserDB* users, char* input) {
         command_userdel(users, argc, argv);
     } else if (strcmp(argv[0], "userlist") == 0) {
         command_userlist(users);
+    } else if (strcmp(argv[0], "diff") == 0) {
+        command_diff(vfs, users, argc, argv);
     } else {
         printf("Unknown command: %s\n", argv[0]);
     }

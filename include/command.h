@@ -33,3 +33,4 @@ const char* GetNameByUID(UserDB* users, int uid);
 const char* GetNameByGID(UserDB* users, int gid);
 
 #endif
+void command_diff(VFS* vfs, UserDB* users, int argc, char** argv);
