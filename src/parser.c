@@ -22,6 +22,8 @@ void ParseAndExecute(VFS* vfs, Stack* stack, UserDB* users, char* input) {
         command_cd(vfs, users, argc > 1 ? argv[1] : NULL);
     } else if (strcmp(argv[0], "cat") == 0) {
         command_cat(vfs, users, argc, argv);
+    } else if (strcmp(argv[0], "head") == 0) {
+        command_head(vfs, users, argc, argv);
     } else if (strcmp(argv[0], "pwd") == 0) {
         command_pwd(vfs, stack, argc > 1 ? argv[1] : NULL);
     } else if (strcmp(argv[0], "mkdir") == 0) {
