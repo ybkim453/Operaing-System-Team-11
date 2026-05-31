@@ -13,6 +13,7 @@ int     command_mkdir(int argc, char** argv, VFS* vfs, UserDB* users);
 int     command_chown(int argc, char** argv, VFS* vfs, UserDB* users);
 int     command_pwd(VFS* vfs, Stack* stack, const char* arg);
 int     command_mv(VFS* vfs, int argc, char** argv);
+void command_echo(VFS* vfs, UserDB* users, int argc, char** argv);
 
 /* 추가 명령어 */
 void    command_head(VFS* vfs, UserDB* users, int argc, char** argv);
