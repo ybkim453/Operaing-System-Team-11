@@ -13,6 +13,7 @@ int     command_mkdir(int argc, char** argv, VFS* vfs, UserDB* users);
 int     command_chown(int argc, char** argv, VFS* vfs, UserDB* users);
 int     command_pwd(VFS* vfs, Stack* stack, const char* arg);
 int     command_mv(VFS* vfs, int argc, char** argv);
+void command_echo(VFS* vfs, UserDB* users, int argc, char** argv);
 
 int     command_useradd(UserDB* users, int argc, char** argv);
 int     command_userdel(UserDB* users, int argc, char** argv);
