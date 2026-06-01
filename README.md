@@ -72,7 +72,10 @@ make clean
 │   ├── mv.c           이름 변경 및 이동 (신규 구현)
 │   ├── grep.c
 │   ├── chown.c
-│   └── user.c
+│   ├── user.c
+│   ├── head.c         상위 N줄 출력 (추가 명령어)
+│   ├── echo.c         문자열 출력 (추가 명령어)
+│   └── diff.c         파일 줄 단위 비교 (추가 명령어)
 ├── Makefile
 └── README.md
 ```
@@ -95,6 +98,13 @@ make clean
 | `grep` | `-n` `-i` `-v` `-o` | 파일 내용 검색 |
 | `mv` | | 파일/디렉토리 이동 및 이름 변경 |
 | `rm` | `-r` `-f` `-v` | 삭제 |
+
+### 추가 명령어 (보너스, 최대 3개)
+| 명령어 | 옵션 | 설명 |
+|--------|------|------|
+| `head` | `-n` | 파일 상위 N줄 출력 |
+| `echo` | | 문자열 출력 |
+| `diff` | | 두 파일 줄 단위 비교 |
 
 ### 기타
 | 명령어 | 설명 |
@@ -227,7 +237,82 @@ grep apple file1.txt file2.txt file3.txt
 grep -n banana file1.txt file2.txt file3.txt
 ```
 
-### 9. 종료
+### 9. echo — 출력 및 파일 쓰기
+
+```
+# 기본 출력 (stdout)
+echo hello world
+
+# -n 옵션: 줄바꿈 없이 출력
+echo -n no newline
+
+# > : 파일 생성 및 덮어쓰기
+echo first line > log.txt
+cat log.txt
+echo overwrite > log.txt
+cat log.txt
+
+# >> : 기존 파일에 내용 추가
+echo second line >> log.txt
+cat log.txt
+
+# 공백 없는 리다이렉션 형식도 동일하게 동작
+echo third line >>log.txt
+cat log.txt
+```
+
+### 10. head — 파일 상위 N줄 출력
+
+```
+# 테스트용 파일 준비 (12줄)
+echo line1 > data.txt
+echo line2 >> data.txt
+echo line3 >> data.txt
+echo line4 >> data.txt
+echo line5 >> data.txt
+echo line6 >> data.txt
+echo line7 >> data.txt
+echo line8 >> data.txt
+echo line9 >> data.txt
+echo line10 >> data.txt
+echo line11 >> data.txt
+echo line12 >> data.txt
+
+# 기본값: 상위 10줄 출력
+head data.txt
+
+# -n 옵션: 상위 5줄 출력
+head -n 5 data.txt
+
+# -n 이 파일 줄 수(12)보다 클 때: 전체 출력
+head -n 20 data.txt
+```
+
+### 11. diff — 두 파일 줄 단위 비교
+
+```
+# 비교용 파일 준비
+echo apple > a.txt
+echo banana >> a.txt
+echo cherry >> a.txt
+
+echo apple > b.txt
+echo blueberry >> b.txt
+echo cherry >> b.txt
+
+# 차이 있는 줄만 출력 (Line 2 differ)
+diff a.txt b.txt
+
+# 동일한 파일 비교 → 출력 없음
+diff a.txt a.txt
+
+# 줄 수가 다른 경우: 짧은 쪽에 [EOF] 표시
+echo apple > short.txt
+
+diff a.txt short.txt
+```
+
+### 12. 종료
 
 ```
 exit
